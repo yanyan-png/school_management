@@ -1,4 +1,4 @@
-# account/urls.py
+# URL paths of views under account app
 
 from django.urls import path
 from . import views

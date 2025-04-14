@@ -1,4 +1,3 @@
-# account/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .forms import StudentLoginForm, TeacherLoginForm
@@ -6,7 +5,9 @@ from .models import Student, Teacher
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
+import logging
 
+# Responsible for the log-in page viewing and validation of Student accounts
 def student_login_view(request):
     if request.user.is_authenticated:
         return redirect('account:student_dashboard')  # redirect if already logged in
@@ -20,10 +21,10 @@ def student_login_view(request):
         return redirect('account:student_dashboard')
     return render(request, 'student/student_login.html', {'form': form})
 
-import logging
 
 logger = logging.getLogger(__name__)
 
+# Responsible for the log-in page viewing and validation of Teacher accounts
 def teacher_login_view(request):
     if request.user.is_authenticated:
         return redirect('account:teacher_dashboard')
@@ -33,33 +34,37 @@ def teacher_login_view(request):
         username = form.cleaned_data['username']
         password = form.cleaned_data['password']
 
-        logger.info(f"Attempting login for user: {username}")  # Log the username attempt
+        print(f"Trying to authenticate user: {username}")  # Debug line
         user = authenticate(request, username=username, password=password)
 
-        if user is not None and user.role == 'Teacher':  
-            logger.info(f"User {username} authenticated successfully.")  # Log successful authentication
+        if user:
+            print(f"Authenticated: {user} with role {user.role}")  # Debug line
+
+        if user is not None and user.role.lower() == 'teacher':
             login(request, user)
+            print("Login successful!")  # Debug line
             return redirect('account:teacher_dashboard')
         else:
-            logger.warning(f"Invalid credentials for user: {username}")  # Log failed authentication
+            print("Invalid credentials or role.")  # Debug line
             messages.error(request, "Invalid credentials or not a teacher")
 
     return render(request, 'teacher/teacher_login.html', {'form': form})
 
 
 
-
-
-
+# Responsible for displaying the dashboard of Student accounts
 @login_required
 def student_dashboard_view(request):
     return render(request, 'student/student_dashboard.html')
 
+
+# Responsible for displaying the dashboard of Teacher accounts
 @login_required
 def teacher_dashboard_view(request):
     return render(request, 'teacher/teacher_dashboard.html')
 
 
+# Responsible for log-out process
 def logout_view(request):
     logout(request)
     return redirect('account:student_login')  # or redirect based on role if needed
