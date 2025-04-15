@@ -1,0 +1,9 @@
+<h1>Your Classes</h1>
+<a href="{% url 'classroom:create_class' %}">Create a new class</a>
+<ul>
+    {% for c in classes %}
+        <li>{{ c.class_name }} - {{ c.subject }}</li>
+    {% empty %}
+        <li>No classes yet.</li>
+    {% endfor %}
+</ul>
