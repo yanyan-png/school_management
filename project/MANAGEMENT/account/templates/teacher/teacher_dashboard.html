@@ -13,31 +13,5 @@
         <button type="submit">Logout</button>
     </form>
 
-    <!-- Create New Class Button -->
-    <a href="{% url 'classroom:create_class' %}">
-        <button>Create New Class</button>
-    </a>
-
-    <!-- List of Classes -->
-    <h2>Your Classes</h2>
-    {% if classes %}
-        <ul>
-            {% for class in classes %}
-                <li>
-                    <h3>{{ class.class_name }} - {{ class.subject }}</h3>
-                    <p><strong>Enrolled Students:</strong></p>
-                    <ul>
-                        {% for student in class.enrolled_students %}
-                            <li>{{ student.student.user.get_full_name }}</li>
-                        {% empty %}
-                            <li>No students enrolled yet.</li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>You have no classes yet.</p>
-    {% endif %}
 </body>
 </html>

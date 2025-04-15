@@ -1,1 +1,16 @@
-This is student dashboard. I am a student
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ request.user.first_name }}!</h1>
+
+    <!-- Logout Button -->
+    <form action="{% url 'account:logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+</body>
+</html>

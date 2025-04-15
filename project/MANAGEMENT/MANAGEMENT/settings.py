@@ -130,4 +130,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'account.User'
+
+
 "This is just testing. I want to view if this comment can be merged to the main."
