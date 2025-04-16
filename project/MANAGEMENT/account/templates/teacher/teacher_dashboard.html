@@ -3,15 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <title>Teacher Dashboard</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+        }
+        .sidebar button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #34495e;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome, {{ request.user.first_name }}!</h1>
 
-    <!-- Logout Button -->
+<div class="sidebar">
+    <button onclick="showSection('account')">Account</button>
+    <button onclick="showSection('class')">Class</button>
+    <button onclick="showSection('calendar')">Calendar</button>
     <form action="{% url 'account:logout' %}" method="post">
         {% csrf_token %}
-        <button type="submit">Logout</button>
+        <button type="submit" style="background-color: #e74c3c;">Logout</button>
     </form>
+</div>
+
+<div class="content">
+    <div id="account-section">
+        <h2>Account Info</h2>
+        <p>Username: {{ request.user.username }}</p>
+        <p>Name: {{ request.user.first_name }} {{ request.user.last_name }}</p>
+        <p>Email: {{ request.user.email }}</p>
+    </div>
+
+    <div id="class-section" class="hidden">
+        <h2>Your Classes</h2>
+        <a href="{% url 'classroom:create_class' %}">
+            <button>Create New Class</button>
+        </a>
+        <ul>
+            {% for class in classes %}
+                <li>{{ class.class_name }} - {{ class.subject }}</li>
+            {% empty %}
+                <li>You have no classes yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="calendar-section" class="hidden">
+        <h2>Calendar</h2>
+        <p>Coming soon...</p>
+    </div>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        const sections = ['account', 'class', 'calendar'];
+        sections.forEach(id => {
+            document.getElementById(id + '-section').classList.add('hidden');
+        });
+        document.getElementById(sectionId + '-section').classList.remove('hidden');
+    }
+</script>
 
 </body>
 </html>

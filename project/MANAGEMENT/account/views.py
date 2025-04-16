@@ -1,11 +1,9 @@
-# account/views.py
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import StudentLoginForm, TeacherLoginForm
 from .models import Student, User
 
-def student_login_view(request):
+def student_login(request):
     if request.user.is_authenticated:
         return redirect('account:student_dashboard')  # redirect if already logged in
 
@@ -36,7 +34,7 @@ from django.contrib.auth import authenticate, login
 from .forms import TeacherLoginForm
 from django.contrib import messages
 
-def teacher_login_view(request):
+def teacher_login(request):
     if request.user.is_authenticated:
         return redirect('account:teacher_dashboard')  # redirect if already logged in
 
@@ -64,17 +62,27 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
 @login_required
-def student_dashboard_view(request):
+def student_dashboard(request):
     return render (request, 'student/student_dashboard.html')
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from classroom.models import Class
+from account.models import Teacher
+from django.shortcuts import get_object_or_404
+
 @login_required
-def teacher_dashboard_view(request):
-   return render (request, 'teacher/teacher_dashboard.html')
+def teacher_dashboard(request):
+    teacher = get_object_or_404(Teacher, user=request.user)
+    classes = Class.objects.filter(teacher=teacher)
+    
+    return render(request, 'teacher/teacher_dashboard.html', {
+        'classes': classes
+    })
+
 
 from django.contrib.auth import logout
 
 def logout_view(request):
     logout(request)
     return redirect('account:student_login')  # or redirect based on role if needed
-
-

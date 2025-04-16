@@ -1,6 +1,19 @@
-<h1>Create a Class</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
-</form>
+<!-- classroom/templates/classroom/create_class.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Class</title>
+</head>
+<body>
+    <h1>Create New Class</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- This will render the form fields -->
+        <button type="submit">Create Class</button>
+    </form>
+
+    <a href="{% url 'account:teacher_dashboard_view' %}">Back to Dashboard</a>
+</body>
+</html>
