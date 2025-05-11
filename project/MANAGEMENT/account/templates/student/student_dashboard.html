@@ -3,14 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Student Dashboard</title>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .calendar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .present {
+            background-color: green !important;
+            color: white !important;
+            border-radius: 50%;
+        }
+        .absent {
+            background-color: blue !important;
+            color: white !important;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome, {{ request.user.first_name }}!</h1>
 
-    <!-- Logout Button -->
     <form action="{% url 'account:logout' %}" method="post">
         {% csrf_token %}
         <button type="submit">Logout</button>
     </form>
+
+    <div class="calendar-container">
+        <input type="text" id="calendar" placeholder="Select Date">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        const attendanceData = {{ attendance_data|safe }};
+
+        function getStatusClass(date) {
+            const record = attendanceData[date];
+            if (record) {
+                if (record.status === 'Present') {
+                    return 'present';
+                } else if (record.status === 'Absent') {
+                    return 'absent';
+                }
+            }
+            return '';
+        }
+
+        flatpickr("#calendar", {
+            inline: true,
+            defaultDate: "{{ today }}",
+            dateFormat: "Y-m-d",
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const date = dayElem.dateObj.toISOString().split('T')[0];
+                const statusClass = getStatusClass(date);
+                if (statusClass) {
+                    dayElem.classList.add(statusClass);
+                    const record = attendanceData[date];
+                    dayElem.title = `Status: ${record.status}\nTime In: ${record.time_in}\nTime Out: ${record.time_out}`;
+                }
+            }
+        });
+    </script>
 </body>
 </html>

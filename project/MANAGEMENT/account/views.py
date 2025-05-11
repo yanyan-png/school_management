@@ -9,6 +9,11 @@ from account.models import Teacher
 import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from classroom.models import Attendance
+from account.models import Student
+from datetime import date
+
+
 
 
 logger = logging.getLogger(__name__)
@@ -50,8 +55,22 @@ def teacher_login(request):
 
 @login_required
 def student_dashboard(request):
-    return render (request, 'student/student_dashboard.html')
+    student_obj = Student.objects.get(user=request.user)
+    attendance_qs = Attendance.objects.filter(student=student_obj)
 
+    # Prepare dictionary for the calendar
+    attendance_data = {}
+    for record in attendance_qs:
+        attendance_data[str(record.date)] = {
+            'status': record.status,
+            'time_in': str(record.time_in),
+            'time_out': str(record.time_out),
+        }
+
+    return render(request, 'student/student_dashboard.html', {
+        'attendance_data': attendance_data,
+        'today': date.today()
+    })
 
 @login_required
 def teacher_dashboard(request):
