@@ -6,5 +6,5 @@ app_name = 'classroom'
 
 urlpatterns = [
     path('teacher/classes/create/', views.create_class, name='create_class'),
-    # Add other URL patterns here...
+    path('student/calendar/', views.student_calendar, name='student_calendar'),
 ]

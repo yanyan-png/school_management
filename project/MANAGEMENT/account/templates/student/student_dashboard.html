@@ -2,74 +2,190 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            grid-gap: 10px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .star-plot {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+            background-color: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .avatar {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            background-color: #fff8e1;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
         .calendar-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            grid-column: 3 / 4;
+            grid-row: 1 / 2;
             background-color: #f9f9f9;
-            border: 1px solid #ccc;
             padding: 10px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .present {
-            background-color: green !important;
-            color: white !important;
-            border-radius: 50%;
+
+        .announcement {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
         }
-        .absent {
-            background-color: blue !important;
-            color: white !important;
-            border-radius: 50%;
+
+        .name {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+            background-color: #ffebee;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .badge {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
+            background-color: #ede7f6;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .logout-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome, {{ request.user.first_name }}!</h1>
+    <div>
+        <div class="logout-container">
+            <form action="{% url 'account:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+        <div class="dashboard-container">
+            <!-- Star Plot Section -->
+            <div class="star-plot">
+                <h2>Star Plot</h2>
+                <p>Placeholder for star plot visualization</p>
+            </div>
 
-    <form action="{% url 'account:logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+            <!-- Avatar Section -->
+            <div class="avatar">
+                <h2>Avatar</h2>
+                <p>Placeholder for avatar</p>
+            </div>
 
-    <div class="calendar-container">
-        <input type="text" id="calendar" placeholder="Select Date">
+            <!-- Calendar Section -->
+            <div class="calendar-container">
+                <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;">
+            </div>
+
+            <!-- Announcement Section -->
+            <div class="announcement">
+                <h2>Announcement</h2>
+                <p>Placeholder for announcements</p>
+            </div>
+
+            <!-- Name Section -->
+            <div class="name">
+                <h2>Name</h2>
+                <p>{{ request.user.first_name }}</p>
+            </div>
+
+            <!-- Badge Section -->
+            <div class="badge">
+                <h2>Badge</h2>
+                <p>Placeholder for badges</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        const attendanceData = {{ attendance_data|safe }};
+<script>
+    // Attendance data from Django
+    const attendanceData = {{ attendance_data|safe }};
+    console.log(attendanceData);  // ✅ Debug
 
-        function getStatusClass(date) {
-            const record = attendanceData[date];
-            if (record) {
-                if (record.status === 'Present') {
-                    return 'present';
-                } else if (record.status === 'Absent') {
-                    return 'absent';
-                }
+    // Flatpickr Calendar
+    flatpickr("#calendar", {
+        inline: true,
+        defaultDate: "today",
+        dateFormat: "Y-m-d",
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            let date = dayElem.dateObj.toISOString().split('T')[0];  // Format: YYYY-MM-DD
+            let record = attendanceData[date];
+
+            if (record && record.status === "Present") {
+                dayElem.style.backgroundColor = "#4caf50";  // Green
+                dayElem.style.color = "white";
+                dayElem.style.borderRadius = "50%";
+            } else if (record && record.status === "Absent") {
+                dayElem.style.backgroundColor = "#2196f3";  // Blue
+                dayElem.style.color = "white";
+                dayElem.style.borderRadius = "50%";
             }
-            return '';
         }
+    });
 
-        flatpickr("#calendar", {
-            inline: true,
-            defaultDate: "{{ today }}",
-            dateFormat: "Y-m-d",
-            onDayCreate: function(dObj, dStr, fp, dayElem) {
-                const date = dayElem.dateObj.toISOString().split('T')[0];
-                const statusClass = getStatusClass(date);
-                if (statusClass) {
-                    dayElem.classList.add(statusClass);
-                    const record = attendanceData[date];
-                    dayElem.title = `Status: ${record.status}\nTime In: ${record.time_in}\nTime Out: ${record.time_out}`;
-                }
-            }
-        });
-    </script>
+    // When user clicks the calendar, redirect!
+    document.getElementById("calendar").addEventListener("click", function() {
+        window.location.href = "{% url 'classroom:student_calendar' %}";
+
+    });
+</script>
+
+
+
 </body>
 </html>

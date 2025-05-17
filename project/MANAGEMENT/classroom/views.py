@@ -1,5 +1,6 @@
 # classroom/views.py
 from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .forms import ClassForm
 from django.contrib.auth.decorators import login_required
 from account.models import Teacher
@@ -20,3 +21,7 @@ def create_class(request):
         form = ClassForm()
 
     return render(request, 'teacher/create_class.html', {'form': form})
+
+@login_required
+def student_calendar(request):
+    return render(request, 'student/student_calendar.html')

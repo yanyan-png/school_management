@@ -1,1 +1,72 @@
-<h>Hello, this is the student calendar</h>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance Calendar</title>
+
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        #calendar {
+            max-width: 90%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Student Attendance Calendar</h1>
+
+    <div id="calendar"></div>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+    <script>
+        // Attendance data from Django
+        const attendanceData = {{ attendance_data|safe }};
+        console.log(attendanceData);  // ✅ Debug
+
+        // Convert attendance data into FullCalendar events
+        const events = Object.keys(attendanceData).map(date => {
+            const status = attendanceData[date].status;
+            return {
+                title: status,
+                start: date,
+                color: status === "Present" ? "#4caf50" : "#2196f3"  // Green or Blue
+            };
+        });
+
+        // Initialize FullCalendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: events,
+                height: "auto"
+            });
+            calendar.render();
+        });
+    </script>
+
+</body>
+</html>
