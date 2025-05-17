@@ -1,72 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Attendance Calendar</title>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
 
-    <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <!-- ✅ FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.css" />
 
+    <!-- ✅ Custom Styles -->
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            text-align: center;
-            margin: 20px 0;
-            color: #333;
-        }
-
-        #calendar {
-            max-width: 90%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      #calendar {
+        max-width: 900px;
+        margin: 0 auto;
+      }
     </style>
-</head>
-<body>
 
-    <h1>Student Attendance Calendar</h1>
-
-    <div id="calendar"></div>
-
-    <!-- FullCalendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+    <!-- ✅ FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 
     <script>
-        // Attendance data from Django
-        const attendanceData = {{ attendance_data|safe }};
-        console.log(attendanceData);  // ✅ Debug
-
-        // Convert attendance data into FullCalendar events
-        const events = Object.keys(attendanceData).map(date => {
-            const status = attendanceData[date].status;
-            return {
-                title: status,
-                start: date,
-                color: status === "Present" ? "#4caf50" : "#2196f3"  // Green or Blue
-            };
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth'
         });
-
-        // Initialize FullCalendar
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: events,
-                height: "auto"
-            });
-            calendar.render();
-        });
+        calendar.render();
+      });
     </script>
-
-</body>
+  </head>
+  <body>
+    <div id='calendar'></div>
+  </body>
 </html>
