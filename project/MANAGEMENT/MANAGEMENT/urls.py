@@ -23,5 +23,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('account.urls')),  # 👈 include the account app URLs
     path('classroom/', include('classroom.urls')),
+    path('admin/', admin.site.urls),
+    path('classroom/', include('classroom.urls')),  # ✅ Make sure this line exists
+    path('account/', include('account.urls')),
+    path('message/', include('message.urls')),
+    
 ]
 

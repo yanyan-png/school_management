@@ -12,6 +12,7 @@ from django.contrib import messages
 from classroom.models import Attendance
 from account.models import Student
 from datetime import date
+from classroom.models import Badge  # adjust the path if it's in another app
 
 
 
@@ -59,7 +60,7 @@ def student_dashboard(request):
     student_obj = Student.objects.get(user=request.user)
     attendance_qs = Attendance.objects.filter(student=student_obj)
 
-    # Prepare dictionary for the calendar
+    # Prepare attendance data for calendar
     attendance_data = {}
     for record in attendance_qs:
         attendance_data[str(record.date)] = {
@@ -68,8 +69,12 @@ def student_dashboard(request):
             'time_out': str(record.time_out),
         }
 
+    # Get badges related to this student
+    badges = Badge.objects.filter(student=student_obj).order_by('-timestamp')
+
     return render(request, 'student/student_dashboard.html', {
         'attendance_data': attendance_data,
+        'badges': badges,
         'today': date.today()
     })
 
@@ -82,6 +87,12 @@ def teacher_dashboard(request):
         'classes': classes
     })
 
+
 def logout_view(request):
     logout(request)
     return redirect('account:student_login')  # or redirect based on role if needed
+
+# In account/views.py
+def student_merit_view(request):
+    # your logic here
+    return render(request, 'student/student_merit.html')

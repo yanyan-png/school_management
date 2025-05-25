@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Student Dashboard</title>
     <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,7 +64,19 @@
             background-color: #e8f5e9;
             padding: 20px;
             border-radius: 8px;
-            text-align: center;
+            text-align: left;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+
+        .announcement ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .announcement li {
+            margin-bottom: 10px;
+            list-style-type: disc;
         }
 
         .name {
@@ -83,6 +95,44 @@
             padding: 20px;
             border-radius: 8px;
             text-align: center;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+
+        .badge ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        /* Star-shaped badge */
+        .badge li {
+            background-color: gold;
+            color: #333;
+            width: 100px;
+            height: 100px;
+            clip-path: polygon(
+                50% 0%,
+                61% 35%,
+                98% 35%,
+                68% 57%,
+                79% 91%,
+                50% 70%,
+                21% 91%,
+                32% 57%,
+                2% 35%,
+                39% 35%
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .logout-container {
@@ -127,13 +177,20 @@
 
             <!-- Calendar Section -->
             <div class="calendar-container">
-                <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;">
+                <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;" />
             </div>
 
             <!-- Announcement Section -->
             <div class="announcement">
-                <h2>Announcement</h2>
-                <p>Placeholder for announcements</p>
+                <h2>Announcements</h2>
+                <ul>
+                    <li>Quiz on Monday: Math</li>
+                    <li>Science Project due Wednesday</li>
+                    <li>History assignment submission by Friday</li>
+                    <li>Group meeting scheduled for Thursday</li>
+                    <li>Sports tryouts next week</li>
+                    <li>Submit feedback form by Sunday</li>
+                </ul>
             </div>
 
             <!-- Name Section -->
@@ -142,50 +199,60 @@
                 <p>{{ request.user.first_name }}</p>
             </div>
 
-            <!-- Badge Section -->
+            <!-- Badge Section with badges list -->
             <div class="badge">
-                <h2>Badge</h2>
-                <p>Placeholder for badges</p>
+                <h2>Badges</h2>
+                {% if badges %}
+                    <ul>
+                        {% for badge in badges %}
+                            <li>
+                                {{ badge.shard_count }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <ul>
+                        <li>Merit</li>
+                    </ul>
+                    
+                {% endif %}
+                <form action="{% url 'account:student_merit' %}" method="get" style="margin-top: 10px;">
+                     <button type="submit">View Merits</button>
+                </form>
             </div>
-        </div>
-    </div>
 
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    // Attendance data from Django
-    const attendanceData = {{ attendance_data|safe }};
-    console.log(attendanceData);  // ✅ Debug
+    <script>
+        // Attendance data from Django
+        const attendanceData = {{ attendance_data|safe }};
+        console.log(attendanceData);  // ✅ Debug
 
-    // Flatpickr Calendar
-    flatpickr("#calendar", {
-        inline: true,
-        defaultDate: "today",
-        dateFormat: "Y-m-d",
-        onDayCreate: function(dObj, dStr, fp, dayElem) {
-            let date = dayElem.dateObj.toISOString().split('T')[0];  // Format: YYYY-MM-DD
-            let record = attendanceData[date];
+        // Flatpickr Calendar
+        flatpickr("#calendar", {
+            inline: true,
+            defaultDate: "today",
+            dateFormat: "Y-m-d",
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                let date = dayElem.dateObj.toISOString().split('T')[0];  // Format: YYYY-MM-DD
+                let record = attendanceData[date];
 
-            if (record && record.status === "Present") {
-                dayElem.style.backgroundColor = "#4caf50";  // Green
-                dayElem.style.color = "white";
-                dayElem.style.borderRadius = "50%";
-            } else if (record && record.status === "Absent") {
-                dayElem.style.backgroundColor = "#2196f3";  // Blue
-                dayElem.style.color = "white";
-                dayElem.style.borderRadius = "50%";
+                if (record && record.status === "Present") {
+                    dayElem.style.backgroundColor = "#4caf50";  // Green
+                    dayElem.style.color = "white";
+                    dayElem.style.borderRadius = "50%";
+                } else if (record && record.status === "Absent") {
+                    dayElem.style.backgroundColor = "#2196f3";  // Blue
+                    dayElem.style.color = "white";
+                    dayElem.style.borderRadius = "50%";
+                }
             }
-        }
-    });
+        });
 
-    // When user clicks the calendar, redirect!
-    document.getElementById("calendar").addEventListener("click", function() {
-        window.location.href = "{% url 'classroom:student_calendar' %}";
-
-    });
-</script>
-
-
-
+        // Redirect on calendar click
+        document.getElementById("calendar").addEventListener("click", function() {
+            window.location.href = "{% url 'classroom:student_calendar' %}";
+        });
+    </script>
 </body>
 </html>
