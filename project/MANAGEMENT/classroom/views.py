@@ -90,6 +90,7 @@ def student_announcement(request):
 
 from .models import Grade
 @login_required
+
 def student_starplot(request):
     student_obj = Student.objects.get(user=request.user)
 
@@ -108,20 +109,6 @@ def student_starplot(request):
     scores = list(radar_chart_data.values())
 
     return render(request, 'student/student_starplot.html', {
-<<<<<<< HEAD
-        'categories': categories,
-        'scores': scores,
-    })
-
-def teacher_class(request):
-    return render(request, 'teacher/teacher_class.html')
-
-def teacher_calendar(request):
-    # your logic here, e.g., fetch calendar data
-    return render(request, 'teacher/teacher_calendar.html')
-
-=======
         'categories': json.dumps(categories),
         'scores': json.dumps(scores),
     })
->>>>>>> 0cbfc162cc289b67c4b116fcd1ae866e285cb763

@@ -78,15 +78,15 @@ def student_dashboard(request):
 
     attendance_qs = Attendance.objects.filter(student=student_obj)
 
-    attendance_data = {}
-    for record in attendance_qs:
+    attendance_data = {
+        for record in attendance_qs:
         attendance_data[str(record.date)] = {
             'status': record.status,
             'time_in': str(record.time_in),
             'time_out': str(record.time_out),
         }
         for record in attendance_qs
-    }
+        }
 
     badges = Badge.objects.filter(student=student_obj).order_by('-timestamp')
 
@@ -113,7 +113,7 @@ def student_dashboard(request):
         'attendance_data': attendance_data,
         'badges': badges,
         'today': date.today()
-    })
+    }
 
 
 
