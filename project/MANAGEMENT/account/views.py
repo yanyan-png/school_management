@@ -55,6 +55,19 @@ def teacher_login(request):
     return render(request, 'teacher/teacher_login.html', {'form': form})
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from datetime import date
+from .models import Student, Announcement
+from classroom.models import Attendance, Grade, Badge
+from django.http import JsonResponse
+
+
+import json
+
+from datetime import date
+import json
+
 @login_required
 def student_dashboard(request):
     student_obj = Student.objects.filter(user=request.user).first()
@@ -72,10 +85,31 @@ def student_dashboard(request):
             'time_in': str(record.time_in),
             'time_out': str(record.time_out),
         }
+        for record in attendance_qs
+    }
 
     badges = Badge.objects.filter(student=student_obj).order_by('-timestamp')
 
-    return render(request, 'student/student_dashboard.html', {
+    # Grades for Radar Plot
+    grades = Grade.objects.filter(student=student_obj)
+    radar_chart_data = {}
+
+    for grade in grades:
+        subject_name = str(grade.class_obj)  # Use __str__ method of Class
+        written = grade.written_work or 0
+        performance = grade.performance_task or 0
+        final = grade.final_exam or 0
+        total = written + performance + final
+        radar_chart_data[subject_name] = total
+
+    categories = list(radar_chart_data.keys())
+    scores = list(radar_chart_data.values())
+
+    # Announcements
+    announcements = Announcement.objects.order_by('-date_posted')[:10]
+
+    # ✅ Combine everything into ONE context dict
+    context = {
         'attendance_data': attendance_data,
         'badges': badges,
         'today': date.today()
@@ -101,3 +135,20 @@ def logout_view(request):
 def student_merit_view(request):
     # your logic here
     return render(request, 'student/student_merit.html')
+
+
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def qr_login(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            lrn = data.get('lrn')
+            student = Student.objects.get(lrn=lrn)
+            login(request, student.user)
+            return JsonResponse({'success': True, 'redirect_url': '/student/dashboard/'})
+        except Student.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid QR code'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+

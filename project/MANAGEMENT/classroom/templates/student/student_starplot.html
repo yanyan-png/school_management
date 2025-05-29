@@ -28,32 +28,25 @@
   <div id="radar-chart" style="width:600px; height:600px; margin:0 auto;"></div>
 
   <script>
-    // Sample data for radar chart (replace with your actual data)
-    var categories = ['Math', 'Science', 'History', 'Art', 'PE', 'English'];
-    var studentScores = [80, 90, 70, 85, 95, 75];
-
-    var data = [
-      {
-        type: 'scatterpolar',
-        r: studentScores,
-        theta: categories,
-        fill: 'toself',
-        name: 'Student A',
-        marker: { color: 'rgba(0,123,255,0.7)' }
-      }
-    ];
-
-    var layout = {
-      polar: {
-        radialaxis: {
-          visible: true,
-          range: [0, 100]
-        }
-      },
-      showlegend: false
-    };
-
-    Plotly.newPlot('radar-chart', data, layout);
-  </script>
+        const categories = JSON.parse('{{ categories|escapejs }}');
+        const studentScores = JSON.parse('{{ scores|escapejs }}');
+    
+        Plotly.newPlot('radar-chart', [{
+            type: 'scatterpolar',
+            r: studentScores,
+            theta: categories,
+            fill: 'toself',
+            name: 'Total Grade',
+            marker: { color: 'rgba(0,123,255,0.7)' }
+        }], {
+            polar: {
+                radialaxis: {
+                    visible: true,
+                    range: [0, 500]
+                }
+            },
+            showlegend: false
+        });
+    </script>
 </body>
 </html>

@@ -1,7 +1,66 @@
 <h2>Student Login</h2>
-<form method="post">
+
+<!-- Manual LRN Login Form -->
+<form method="post" action="{% url 'account:student_login' %}">
     {% csrf_token %}
-    {{ form.as_p }}
+    <label for="lrn">Enter LRN:</label>
+    <input type="text" id="lrn" name="lrn" required>
     <button type="submit">Login</button>
 </form>
+
+<hr style="margin: 20px 0;">
+
+<!-- QR Login Option -->
+<button id="start-scan-btn">Scan QR Code Instead</button>
+
+<!-- QR Scanner (Hidden Initially) -->
+<div id="scanner-section" style="display:none; margin-top: 20px;">
+    <div id="reader" style="width: 300px;"></div>
+</div>
+
+<!-- Optional: Teacher Login -->
 <p>Are you a teacher? <a href="{% url 'account:teacher_login' %}">Login here</a></p>
+
+<!-- QR Scanner Script -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    const scannerSection = document.getElementById('scanner-section');
+    const startScanBtn = document.getElementById('start-scan-btn');
+
+    startScanBtn.addEventListener('click', () => {
+        scannerSection.style.display = 'block';
+        startScanBtn.style.display = 'none';
+
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            (decodedText, decodedResult) => {
+                html5QrCode.stop().then(() => {
+                    // Send LRN to Django for login
+                    fetch("{% url 'account:qr_login' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({ lrn: decodedText })
+                    }).then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            alert("Login failed. Please try again.");
+                        }
+                    });
+                });
+            },
+            (errorMessage) => {
+                // Optionally log errors for debugging
+                // console.log(errorMessage);
+            }
+        );
+    });
+</script>
