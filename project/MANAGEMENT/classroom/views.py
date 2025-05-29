@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect
 from .forms import ClassForm
 from django.contrib.auth.decorators import login_required
 from account.models import Teacher, Student
-from classroom.models import Badge  # Make sure Badge is imported from your classroom app
+from classroom.models import Badge
+from django.http import JsonResponse
+from .models import Attendance
+
 
 @login_required
 def create_class(request):
@@ -20,16 +23,73 @@ def create_class(request):
 
     return render(request, 'teacher/create_class.html', {'form': form})
 
+
 @login_required
 def student_calendar(request):
-    return render(request, 'student/student_calendar.html')
+    try:
+        student = Student.objects.get(user=request.user)
+        attendances = Attendance.objects.filter(student=student).order_by('-date')
+    except Student.DoesNotExist:
+        attendances = []
+
+    return render(request, 'student/student_calendar.html', {
+        'attendances': attendances,
+    })
+
 
 @login_required
 def student_merit_view(request):
     try:
         student = Student.objects.get(user=request.user)
-        badges = Badge.objects.filter(student=student, type='merit')  # Only merit badges
+        badges = Badge.objects.filter(student=student, type='merit')
     except Student.DoesNotExist:
         badges = []
 
     return render(request, 'student/student_merit.html', {'badges': badges})
+
+
+# ─── NEW: JSON endpoint for FullCalendar ────────────────────────────────
+@login_required
+def attendance_events(request):
+    try:
+        student = Student.objects.get(user=request.user)
+        attendance_records = Attendance.objects.filter(student=student)
+    except Student.DoesNotExist:
+        attendance_records = []
+
+    events = []
+    for rec in attendance_records:
+        # pick a color per status
+        if rec.status == 'present':
+            color = '#4caf50'   # green
+        elif rec.status == 'absent':
+            color = '#f44336'   # red
+        elif rec.status == 'excused':
+            color = '#ff9800'   # orange
+        else:
+            color = '#2196f3'   # fallback blue
+
+        events.append({
+            'title': f"{rec.class_obj.class_name} – {rec.status.capitalize()}",
+            'start': rec.date.strftime('%Y-%m-%d'),
+            'allDay': True,
+            'color': color,
+        })
+
+    return JsonResponse(events, safe=False)
+
+def student_announcement(request):
+    # You can pass any context you need to the template
+    # For example, if you have a model Announcement, fetch all:
+    # announcements = Announcement.objects.all()
+    # return render(request, 'student/student_announcement.html', {'announcements': announcements})
+    
+    return render(request, 'student/student_announcement.html')
+
+def student_starplot(request):
+    categories = ['Math', 'Science', 'History', 'Art', 'PE', 'English']
+    scores = [85, 90, 75, 80, 95, 70]  # Replace with actual data
+    return render(request, 'student/student_starplot.html', {
+        'categories': categories,
+        'scores': scores,
+    })
