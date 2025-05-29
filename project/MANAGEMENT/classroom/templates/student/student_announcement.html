@@ -1,12 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>All Announcements</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>All Announcements</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f5f5f5;
+  }
+  h1 {
+    text-align: center;
+  }
+  /* Container for the whole page */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Big sliding announcement */
+  .main-announcement {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: #2a9df4;
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 30px;
+  }
+  .slide-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+  }
+  .slide {
+    min-width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .slide h2 {
+    margin-top: 0;
+  }
+
+  /* Bottom announcements container */
+  .bottom-container {
+    display: flex;
+    gap: 15px;
+  }
+  /* Smaller announcement boxes */
+  .announcement-box {
+    background: white;
+    border-radius: 6px;
+    padding: 15px;
+    flex: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+    transition: background-color 0.3s;
+  }
+  .announcement-box:hover {
+    background-color: #e6f0ff;
+  }
+
+  /* Expanded full announcement panel */
+  .full-announcement {
+    margin-left: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
+    width: 400px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  /* Container for bottom + full expanded panel */
+  .bottom-and-full {
+    display: flex;
+  }
+
+  a.back-link {
+    display: inline-block;
+    margin-top: 30px;
+    text-decoration: none;
+    color: #2a9df4;
+    font-weight: bold;
+  }
+  a.back-link:hover {
+    text-decoration: underline;
+  }
+</style>
 </head>
 <body>
-    <h1>All Announcements</h1>
-    <p>This is the detailed announcements page.</p>
-    <a href="{% url 'account:student_dashboard' %}">Back to Dashboard</a>
+<div class="container">
+  <h1>All Announcements</h1>
+
+  <!-- Main announcement slider -->
+  <div class="main-announcement">
+    <div class="slide-wrapper" id="slideWrapper">
+      <!-- Replace below with Django loop for main announcements -->
+      <div class="slide">
+        <h2>Main Announcement 1</h2>
+        <p>This is the content of the first main announcement.</p>
+      </div>
+      <div class="slide">
+        <h2>Main Announcement 2</h2>
+        <p>This is the content of the second main announcement.</p>
+      </div>
+      <div class="slide">
+        <h2>Main Announcement 3</h2>
+        <p>This is the content of the third main announcement.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom small announcements + expanded detail panel -->
+  <div class="bottom-and-full">
+    <div class="bottom-container" id="announcementList" style="flex-grow: 1;">
+      <!-- Replace below with Django loop for all other announcements -->
+      <div class="announcement-box" data-fulltitle="Announcement 1 Title" data-fullcontent="Full detailed content of announcement 1. This can be a longer paragraph or multiple paragraphs.">
+        <strong>Announcement 1 Title</strong><br />
+        Short summary or excerpt here.
+      </div>
+      <div class="announcement-box" data-fulltitle="Announcement 2 Title" data-fullcontent="Full detailed content of announcement 2. More details here...">
+        <strong>Announcement 2 Title</strong><br />
+        Short summary or excerpt here.
+      </div>
+      <div class="announcement-box" data-fulltitle="Announcement 3 Title" data-fullcontent="Full detailed content of announcement 3. This is where the full announcement is shown.">
+        <strong>Announcement 3 Title</strong><br />
+        Short summary or excerpt here.
+      </div>
+    </div>
+
+    <div class="full-announcement" id="fullAnnouncement" style="display:none;">
+      <h2 id="fullTitle"></h2>
+      <p id="fullContent"></p>
+    </div>
+  </div>
+
+  <a href="{% url 'account:student_dashboard' %}" class="back-link">Back to Dashboard</a>
+</div>
+
+<script>
+  // Auto-slide main announcements every 4 seconds
+  const slideWrapper = document.getElementById('slideWrapper');
+  const slides = slideWrapper.children;
+  let currentIndex = 0;
+
+  function showSlide(index) {
+    slideWrapper.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+  }, 4000);
+
+  // Handle clicking on bottom announcements
+  const announcementBoxes = document.querySelectorAll('.announcement-box');
+  const fullAnnouncement = document.getElementById('fullAnnouncement');
+  const fullTitle = document.getElementById('fullTitle');
+  const fullContent = document.getElementById('fullContent');
+
+  announcementBoxes.forEach(box => {
+    box.addEventListener('click', () => {
+      const title = box.getAttribute('data-fulltitle');
+      const content = box.getAttribute('data-fullcontent');
+
+      fullTitle.textContent = title;
+      fullContent.textContent = content;
+      fullAnnouncement.style.display = 'block';
+
+      // Highlight the selected box
+      announcementBoxes.forEach(b => b.style.backgroundColor = '');
+      box.style.backgroundColor = '#d0e7ff';
+    });
+  });
+</script>
 </body>
 </html>

@@ -57,10 +57,14 @@ def teacher_login(request):
 
 @login_required
 def student_dashboard(request):
-    student_obj = Student.objects.get(user=request.user)
+    student_obj = Student.objects.filter(user=request.user).first()
+    if not student_obj:
+        logout(request)  # log out the user first!
+        messages.error(request, "No student profile found. Please log in again.")
+        return redirect('account:student_login')
+
     attendance_qs = Attendance.objects.filter(student=student_obj)
 
-    # Prepare attendance data for calendar
     attendance_data = {}
     for record in attendance_qs:
         attendance_data[str(record.date)] = {
@@ -69,7 +73,6 @@ def student_dashboard(request):
             'time_out': str(record.time_out),
         }
 
-    # Get badges related to this student
     badges = Badge.objects.filter(student=student_obj).order_by('-timestamp')
 
     return render(request, 'student/student_dashboard.html', {
@@ -77,6 +80,8 @@ def student_dashboard(request):
         'badges': badges,
         'today': date.today()
     })
+
+
 
 @login_required
 def teacher_dashboard(request):

@@ -1,7 +1,55 @@
-<h2>Teacher Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
-<p>Are you a student? <a href="{% url 'account:student_login' %}">Login here</a></p>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Login</title>
+  <link rel="stylesheet" href="{% static 'teacher_login.css' %}" />
+</head>
+<body>
+  <div class="background"></div>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <form method="post" class="login-form" autocomplete="off">
+        {% csrf_token %}
+        <h1 class="login-title">Teacher Login</h1>
+
+        <!-- Django form fields rendered here -->
+        {{ form.as_p }}
+
+        <button class="login-btn" type="submit">Login</button>
+
+        <p>Are you a student? <a href="{% url 'account:student_login' %}">Login here</a></p>
+
+        <div class="login-links">
+          <button class="link-btn" type="button">Sign Up</button>
+          <button class="link-btn" type="button">Forgot Password?</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'teacher_login.js' %}"></script>
+  <script>
+    // Star field only, no comets
+    const bg = document.querySelector('.background');
+    function randomBetween(a, b) { return a + Math.random() * (b - a); }
+    function createStar(x, y, size, twinkleDelay) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = x + 'vw';
+      star.style.top = y + 'vh';
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.opacity = randomBetween(0.6, 1);
+      star.style.animationDelay = twinkleDelay + 's';
+      bg.appendChild(star);
+    }
+    for (let i = 0; i < 120; i++) {
+      createStar(randomBetween(0, 100), Math.pow(Math.random(), 1.6) * 98, randomBetween(0.7, 2.3), randomBetween(0, 3));
+    }
+  </script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+#classroom/views.py
 from django.shortcuts import render, redirect
 from .forms import ClassForm
 from django.contrib.auth.decorators import login_required
@@ -93,3 +94,11 @@ def student_starplot(request):
         'categories': categories,
         'scores': scores,
     })
+
+def teacher_class(request):
+    return render(request, 'teacher/teacher_class.html')
+
+def teacher_calendar(request):
+    # your logic here, e.g., fetch calendar data
+    return render(request, 'teacher/teacher_calendar.html')
+
