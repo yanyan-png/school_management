@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Student Dashboard</title>
-    <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <style>
         body {
@@ -31,30 +30,25 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .star-plot {
-            grid-column: 1 / 2;
-            grid-row: 1 / 2;
-            background-color: #e7f3ff;
+        .star-plot, .avatar, .calendar-container, .announcement, .name, .badge {
             padding: 20px;
             border-radius: 8px;
             text-align: center;
+        }
+
+        .star-plot {
+            grid-column: 1 / 2;
+            background-color: #e7f3ff;
         }
 
         .avatar {
             grid-column: 2 / 3;
-            grid-row: 1 / 2;
             background-color: #fff8e1;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
         }
 
         .calendar-container {
             grid-column: 3 / 4;
-            grid-row: 1 / 2;
             background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -62,8 +56,6 @@
             grid-column: 1 / 2;
             grid-row: 2 / 3;
             background-color: #e8f5e9;
-            padding: 20px;
-            border-radius: 8px;
             text-align: left;
             overflow-y: auto;
             max-height: 150px;
@@ -83,18 +75,12 @@
             grid-column: 2 / 3;
             grid-row: 2 / 3;
             background-color: #ffebee;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
         }
 
         .badge {
             grid-column: 3 / 4;
             grid-row: 2 / 3;
             background-color: #ede7f6;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
             overflow-y: auto;
             max-height: 150px;
         }
@@ -105,28 +91,18 @@
             margin: 0;
         }
 
-        /* Star-shaped badge */
         .badge li {
             background-color: gold;
             color: #333;
             width: 100px;
             height: 100px;
             clip-path: polygon(
-                50% 0%,
-                61% 35%,
-                98% 35%,
-                68% 57%,
-                79% 91%,
-                50% 70%,
-                21% 91%,
-                32% 57%,
-                2% 35%,
-                39% 35%
+                50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
+                50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
             );
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
             margin-bottom: 10px;
             padding: 10px;
             font-size: 12px;
@@ -162,97 +138,158 @@
                 <button type="submit">Logout</button>
             </form>
         </div>
+
         <div class="dashboard-container">
-            <!-- Star Plot Section -->
-            <div class="star-plot">
-                <h2>Star Plot</h2>
-                <p>Placeholder for star plot visualization</p>
-            </div>
+    <div class="star-plot">
+        <h2>Star Plot</h2>
+        <div id="radar-chart-small" style="width:250px; height:250px; margin: 0 auto;"></div>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script>
+            var categories = ['Math', 'Science', 'History', 'Art', 'PE', 'English'];
+            var studentScores = [80, 90, 70, 85, 95, 75];
 
-            <!-- Avatar Section -->
-            <div class="avatar">
-                <h2>Avatar</h2>
-                <p>Placeholder for avatar</p>
-            </div>
+            var data = [{
+                type: 'scatterpolar',
+                r: studentScores,
+                theta: categories,
+                fill: 'toself',
+                name: 'Student A',
+                marker: { color: 'rgba(0,123,255,0.7)' }
+            }];
 
-            <!-- Calendar Section -->
-            <div class="calendar-container">
-                <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;" />
-            </div>
+            var layout = {
+                polar: {
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 100]
+                    }
+                },
+                margin: { t: 10, b: 10, l: 10, r: 10 },
+                showlegend: false
+            };
 
-            <!-- Announcement Section -->
-            <div class="announcement">
-                <h2>Announcements</h2>
-                <ul>
-                    <li>Quiz on Monday: Math</li>
-                    <li>Science Project due Wednesday</li>
-                    <li>History assignment submission by Friday</li>
-                    <li>Group meeting scheduled for Thursday</li>
-                    <li>Sports tryouts next week</li>
-                    <li>Submit feedback form by Sunday</li>
-                </ul>
-            </div>
+            Plotly.newPlot('radar-chart-small', data, layout, { displayModeBar: false });
+        </script>
+        <form action="{% url 'classroom:student_starplot' %}" method="get" style="margin-top: 10px;">
+            <button type="submit">View Star Plot</button>
+        </form>
+    </div>
 
-            <!-- Name Section -->
-            <div class="name">
-                <h2>Name</h2>
-                <p>{{ request.user.first_name }}</p>
-            </div>
+    <div class="avatar">
+        <h2>Avatar</h2>
+        <p>Placeholder for avatar</p>
+    </div>
 
-            <!-- Badge Section with badges list -->
-            <div class="badge">
-                <h2>Badges</h2>
-                {% if badges %}
-                    <ul>
-                        {% for badge in badges %}
-                            <li>
-                                {{ badge.shard_count }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <ul>
-                        <li>Merit</li>
-                    </ul>
-                    
-                {% endif %}
-                <form action="{% url 'account:student_merit' %}" method="get" style="margin-top: 10px;">
-                     <button type="submit">View Merits</button>
-                </form>
-            </div>
+    <div class="calendar-container">
+        <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;" />
+    </div>
 
-    <!-- Flatpickr JS -->
+    <div class="announcement">
+        <h2>Announcements</h2>
+        <ul>
+            <li>Quiz on Monday: Math</li>
+            <li>Science Project due Wednesday</li>
+            <li>History assignment submission by Friday</li>
+            <li>Group meeting scheduled for Thursday</li>
+            <li>Sports tryouts next week</li>
+            <li>Submit feedback form by Sunday</li>
+        </ul>
+        <form action="{% url 'classroom:student_announcement' %}" method="get" style="margin-top: 10px;">
+            <button type="submit">View All Announcements</button>
+        </form>
+    </div>
+
+    <div class="name">
+        <h2>Name</h2>
+        <p>
+            <button id="student-name" style="padding: 10px 20px; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; font-size: 16px;">
+                {{ request.user.first_name }}
+            </button>
+        </p>    
+    </div>
+
+    <div class="badge">
+        <h2>Badges</h2>
+        {% if badges %}
+            <ul>
+                {% for badge in badges %}
+                    <li>{{ badge.shard_count }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <ul><li>Merit</li></ul>
+        {% endif %}
+        <form action="{% url 'account:student_merit' %}" method="get" style="margin-top: 10px;">
+            <button type="submit">View Merits</button>
+        </form>
+    </div>
+</div> <!-- End dashboard-container -->
+
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        // Attendance data from Django
-        const attendanceData = {{ attendance_data|safe }};
-        console.log(attendanceData);  // ✅ Debug
-
         // Flatpickr Calendar
+        const attendanceData = {{ attendance_data|safe }};
         flatpickr("#calendar", {
             inline: true,
             defaultDate: "today",
             dateFormat: "Y-m-d",
             onDayCreate: function(dObj, dStr, fp, dayElem) {
-                let date = dayElem.dateObj.toISOString().split('T')[0];  // Format: YYYY-MM-DD
+                let date = dayElem.dateObj.toISOString().split('T')[0];
                 let record = attendanceData[date];
-
-                if (record && record.status === "Present") {
-                    dayElem.style.backgroundColor = "#4caf50";  // Green
+                if (record?.status === "Present") {
+                    dayElem.style.backgroundColor = "#4caf50";
                     dayElem.style.color = "white";
                     dayElem.style.borderRadius = "50%";
-                } else if (record && record.status === "Absent") {
-                    dayElem.style.backgroundColor = "#2196f3";  // Blue
+                } else if (record?.status === "Absent") {
+                    dayElem.style.backgroundColor = "#2196f3";
                     dayElem.style.color = "white";
                     dayElem.style.borderRadius = "50%";
                 }
             }
         });
 
-        // Redirect on calendar click
         document.getElementById("calendar").addEventListener("click", function() {
             window.location.href = "{% url 'classroom:student_calendar' %}";
         });
+
+        // Modal functionality
+        const modal = document.getElementById('student-modal');
+        const openBtn = document.getElementById('student-name');
+        const closeBtn = document.getElementById('close-modal');
+
+        openBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            modal.style.display = 'flex';
+        });
+
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                modal.style.display = 'none';
+            }
+        });
     </script>
+
+<!-- Modal -->
+<div id="student-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
+    <div class="modal-content" style="background-color: rgb(78, 48, 48); padding: 20px; border-radius: 8px; min-width: 300px; max-width: 90%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        <h3>Student Information</h3>
+        <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <button id="close-modal" style="margin-top: 10px; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+    </div>
+</div>
+
 </body>
 </html>

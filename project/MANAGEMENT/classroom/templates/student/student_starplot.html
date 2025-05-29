@@ -1,1 +1,59 @@
-<h>Hello, this is the student star plot</h>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Star Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    .back-button {
+      display: inline-block;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Student Star Plot</h1>
+
+  <!-- ⭐ Radar Chart placeholder -->
+  <div id="radar-chart" style="width:600px; height:600px; margin:0 auto;"></div>
+
+  <script>
+    // Sample data for radar chart (replace with your actual data)
+    var categories = ['Math', 'Science', 'History', 'Art', 'PE', 'English'];
+    var studentScores = [80, 90, 70, 85, 95, 75];
+
+    var data = [
+      {
+        type: 'scatterpolar',
+        r: studentScores,
+        theta: categories,
+        fill: 'toself',
+        name: 'Student A',
+        marker: { color: 'rgba(0,123,255,0.7)' }
+      }
+    ];
+
+    var layout = {
+      polar: {
+        radialaxis: {
+          visible: true,
+          range: [0, 100]
+        }
+      },
+      showlegend: false
+    };
+
+    Plotly.newPlot('radar-chart', data, layout);
+  </script>
+</body>
+</html>
