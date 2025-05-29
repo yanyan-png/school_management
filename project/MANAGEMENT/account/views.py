@@ -14,6 +14,8 @@ from account.models import Student
 from datetime import date
 from classroom.models import Badge  # adjust the path if it's in another app
 
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 
@@ -96,3 +98,16 @@ def logout_view(request):
 def student_merit_view(request):
     # your logic here
     return render(request, 'student/student_merit.html')
+
+@csrf_exempt
+def qr_login(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            lrn = data.get('lrn')
+            student = Student.objects.get(lrn=lrn)
+            login(request, student.user)
+            return JsonResponse({'success': True, 'redirect_url': '/student/dashboard/'})
+        except Student.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid QR code'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
