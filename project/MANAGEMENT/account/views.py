@@ -152,3 +152,5 @@ def qr_login(request):
             return JsonResponse({'success': False, 'error': 'Invalid QR code'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
+
+#Test
