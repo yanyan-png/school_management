@@ -5,6 +5,7 @@ from account.models import Teacher, Student
 from classroom.models import Badge
 from django.http import JsonResponse
 from .models import Attendance
+import json
 
 
 @login_required
@@ -86,10 +87,26 @@ def student_announcement(request):
     
     return render(request, 'student/student_announcement.html')
 
+from .models import Grade
+@login_required
 def student_starplot(request):
-    categories = ['Math', 'Science', 'History', 'Art', 'PE', 'English']
-    scores = [85, 90, 75, 80, 95, 70]  # Replace with actual data
+    student_obj = Student.objects.get(user=request.user)
+
+    grades = Grade.objects.filter(student=student_obj)
+    radar_chart_data = {}
+
+    for grade in grades:
+        subject_name = str(grade.class_obj)  # ensure __str__ method is meaningful
+        written = grade.written_work or 0
+        performance = grade.performance_task or 0
+        final = grade.final_exam or 0
+        total = written + performance + final
+        radar_chart_data[subject_name] = total
+
+    categories = list(radar_chart_data.keys())
+    scores = list(radar_chart_data.values())
+
     return render(request, 'student/student_starplot.html', {
-        'categories': categories,
-        'scores': scores,
+        'categories': json.dumps(categories),
+        'scores': json.dumps(scores),
     })
