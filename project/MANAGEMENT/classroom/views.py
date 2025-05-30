@@ -110,3 +110,8 @@ def student_starplot(request):
         'categories': json.dumps(categories),
         'scores': json.dumps(scores),
     })
+
+# In account/views.py
+def student_merit_view(request):
+    # your logic here
+    return render(request, 'student/student_merit.html')

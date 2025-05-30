@@ -13,7 +13,20 @@ from classroom.models import Attendance
 from account.models import Student
 from datetime import date
 from classroom.models import Badge  # adjust the path if it's in another app
+from django.views.decorators.csrf import csrf_exempt
 
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from datetime import date
+from .models import Student, Announcement
+from classroom.models import Attendance, Grade, Badge
+from django.http import JsonResponse
+
+
+import json
+
+from datetime import date
 
 
 
@@ -55,18 +68,7 @@ def teacher_login(request):
     return render(request, 'teacher/teacher_login.html', {'form': form})
 
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from datetime import date
-from .models import Student, Announcement
-from classroom.models import Attendance, Grade, Badge
-from django.http import JsonResponse
 
-
-import json
-
-from datetime import date
-import json
 
 @login_required
 def student_dashboard(request):
@@ -131,14 +133,8 @@ def logout_view(request):
     logout(request)
     return redirect('account:student_login')  # or redirect based on role if needed
 
-# In account/views.py
-def student_merit_view(request):
-    # your logic here
-    return render(request, 'student/student_merit.html')
 
 
-
-from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def qr_login(request):
     if request.method == 'POST':
@@ -151,6 +147,3 @@ def qr_login(request):
         except Student.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid QR code'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-
-#Test
