@@ -1,5 +1,6 @@
 from django.db import models
 from account.models import Student, Teacher  # Adjust if your Student/Teacher models are elsewhere
+from django.db import models
 
 class Class(models.Model):
     class_name = models.CharField(max_length=255)
@@ -33,10 +34,11 @@ class Attendance(models.Model):
     date = models.DateField()
     time_in = models.TimeField(null=True, blank=True)
     time_out = models.TimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
 
     def __str__(self):
         return f"{self.student} - {self.date} - {self.status}"
+
 
 
 class Grade(models.Model):
@@ -65,3 +67,13 @@ class Badge(models.Model):
 
     def __str__(self):
         return f"{self.type.capitalize()} for {self.student} in {self.class_obj}"
+    
+class Announcement(models.Model):
+    title = models.CharField(max_length=255)
+    grade = models.CharField(max_length=50)
+    message = models.TextField()
+    image = models.ImageField(upload_to='announcements/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.grade}"

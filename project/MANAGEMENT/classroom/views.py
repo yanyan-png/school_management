@@ -1,3 +1,4 @@
+#classroom/views.py
 from django.shortcuts import render, redirect
 from .forms import ClassForm
 from django.contrib.auth.decorators import login_required
@@ -89,6 +90,7 @@ def student_announcement(request):
 
 from .models import Grade
 @login_required
+
 def student_starplot(request):
     student_obj = Student.objects.get(user=request.user)
 

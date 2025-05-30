@@ -70,20 +70,24 @@ import json
 
 @login_required
 def student_dashboard(request):
-    student_obj = Student.objects.get(user=request.user)
+    student_obj = Student.objects.filter(user=request.user).first()
+    if not student_obj:
+        logout(request)  # log out the user first!
+        messages.error(request, "No student profile found. Please log in again.")
+        return redirect('account:student_login')
 
-    # Attendance
     attendance_qs = Attendance.objects.filter(student=student_obj)
+
     attendance_data = {
-        str(record.date): {
+        for record in attendance_qs:
+        attendance_data[str(record.date)] = {
             'status': record.status,
             'time_in': str(record.time_in),
             'time_out': str(record.time_out),
         }
         for record in attendance_qs
-    }
+        }
 
-    # Badges
     badges = Badge.objects.filter(student=student_obj).order_by('-timestamp')
 
     # Grades for Radar Plot
@@ -108,13 +112,9 @@ def student_dashboard(request):
     context = {
         'attendance_data': attendance_data,
         'badges': badges,
-        'today': date.today(),
-        'categories': json.dumps(categories),
-        'scores': json.dumps(scores),
-        'announcements': announcements,  # <-- Don't forget this!
+        'today': date.today()
     }
 
-    return render(request, 'student/student_dashboard.html', context)
 
 
 @login_required

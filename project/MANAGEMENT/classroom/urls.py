@@ -10,6 +10,8 @@ urlpatterns = [
     path('student/merit/', views.student_merit_view, name='student_merit'),
     path('student-announcement/', views.student_announcement, name='student_announcement'),
     path('student_starplot/', views.student_starplot, name='student_starplot'),
-   
-]
+    path('teacher/class/', views.teacher_class, name='teacher_class'),
+    
+    path('calendar/', views.teacher_calendar, name='teacher_calendar'),
 
+]
