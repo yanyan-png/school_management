@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from datetime import date
-from .models import Student, Announcement
+from .models import Student
 from classroom.models import Attendance, Grade, Badge
 from django.http import JsonResponse
 
@@ -119,14 +119,39 @@ def student_dashboard(request):
     return render(request, 'student/student_dashboard.html', context)
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from classroom.models import Class, Badge, Announcement
+from account.models import Teacher
+
+from django.db.models import Prefetch
+from classroom.models import Enrollment
+from account.models import Student  # Ensure Student has a OneToOneField to User
+
+from django.db.models import Prefetch
+from classroom.models import Enrollment, Badge, Class, Announcement
+from account.models import Student, Teacher
+
 @login_required
 def teacher_dashboard(request):
     teacher = get_object_or_404(Teacher, user=request.user)
-    classes = Class.objects.filter(teacher=teacher)
-    
+
+    classes = Class.objects.filter(teacher=teacher).prefetch_related(
+        Prefetch('enrollments', queryset=Enrollment.objects.select_related('student__user'))
+    )
+
+    announcements = Announcement.objects.all().order_by('-date_posted')[:5]
+
+    # FIXED LINE:
+    badges = Badge.objects.filter(class_obj__teacher=teacher).select_related('student__user')
+
     return render(request, 'teacher/teacher_dashboard.html', {
-        'classes': classes
+        'classes': classes,
+        'announcements': announcements,
+        'badges': badges,
     })
+
+
 
 
 def logout_view(request):
