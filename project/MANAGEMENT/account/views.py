@@ -113,7 +113,7 @@ def student_dashboard(request):
 
     # ✅ Announcements: only for student's enrolled classes
     enrolled_classes = Class.objects.filter(enrollments__student=student_obj)
-    announcements = Announcement.objects.filter(class_obj__in=enrolled_classes).select_related('class_obj').order_by('-date_posted')
+    announcements = Announcement.objects.filter(class_obj__in=enrolled_classes).select_related('class_obj').order_by('-date_postedg')
 
     context = {
         'attendance_data': attendance_data,
