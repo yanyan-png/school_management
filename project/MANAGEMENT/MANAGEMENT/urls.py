@@ -27,6 +27,7 @@ urlpatterns = [
     path('classroom/', include('classroom.urls')),  # ✅ Make sure this line exists
     path('account/', include('account.urls')),
     path('message/', include('message.urls')),
+    path('api/', include('classroom.urls')),
     
 ]
 

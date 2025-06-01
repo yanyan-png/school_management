@@ -181,3 +181,10 @@ def qr_login(request):
         except Student.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid QR code'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+    
+@login_required
+def student_merit(request):
+    student_obj = Student.objects.get(user=request.user)
+    # Add logic to calculate/display merit data
+    return render(request, 'student/student_merit.html', {'student': student_obj})
