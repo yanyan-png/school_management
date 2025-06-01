@@ -70,9 +70,17 @@ def teacher_login(request):
 
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from datetime import date
+import json
+from classroom.models import Attendance, Badge, Grade, Class, Enrollment, Announcement
+from account.models import Student
+
+
 @login_required
 def student_dashboard(request):
-    student_obj = Student.objects.get(user=request.user)
+    student_obj = get_object_or_404(Student, user=request.user)
 
     # Attendance
     attendance_qs = Attendance.objects.filter(student=student_obj)
@@ -93,7 +101,7 @@ def student_dashboard(request):
     radar_chart_data = {}
 
     for grade in grades:
-        subject_name = str(grade.class_obj)  # Use __str__ method of Class
+        subject_name = str(grade.class_obj)
         written = grade.written_work or 0
         performance = grade.performance_task or 0
         final = grade.final_exam or 0
@@ -103,20 +111,21 @@ def student_dashboard(request):
     categories = list(radar_chart_data.keys())
     scores = list(radar_chart_data.values())
 
-    # Announcements
-    announcements = Announcement.objects.order_by('-date_posted')[:10]
+    # ✅ Announcements: only for student's enrolled classes
+    enrolled_classes = Class.objects.filter(enrollments__student=student_obj)
+    announcements = Announcement.objects.filter(class_obj__in=enrolled_classes).select_related('class_obj').order_by('-date_posted')
 
-    # ✅ Combine everything into ONE context dict
     context = {
         'attendance_data': attendance_data,
         'badges': badges,
         'today': date.today(),
         'categories': json.dumps(categories),
         'scores': json.dumps(scores),
-        'announcements': announcements,  # <-- Don't forget this!
+        'announcements': announcements,  # Use original queryset here
     }
 
     return render(request, 'student/student_dashboard.html', context)
+
 
 
 from django.contrib.auth.decorators import login_required
