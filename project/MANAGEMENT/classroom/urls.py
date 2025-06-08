@@ -13,5 +13,9 @@ urlpatterns = [
     path('class-record/', views.select_class_subject, name='select_class_subject'),
     path('grade-sheet/', views.grade_sheet_view, name='grade_sheet'),
     path('teacher/class-record/', views.class_record_view, name='class_record_view'),
+    path('student/calendar/events/', views.student_calendar, name='student_calendar_events'),
+    path('attendance/', views.attendance_events, name='attendance-events'),
+    path('api/attendance/', views.attendance_events, name='attendance-events'),
+    path('announcements/', views.student_announcement, name='student_announcement'),
 ]
 

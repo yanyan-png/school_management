@@ -14,5 +14,7 @@ urlpatterns = [
     path('classroom/', include('classroom.urls')),
     path('dashboard/', views.student_dashboard, name='student_dashboard'),
     path('student/qr-login/', views.qr_login, name='qr_login'),  # NEW
+    path('student/merit/', views.student_merit, name='student_merit'),
+    
 
 ]

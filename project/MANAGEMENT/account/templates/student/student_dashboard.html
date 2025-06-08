@@ -179,8 +179,13 @@
     </div>
 
     <div class="calendar-container">
-        <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;" />
-    </div>
+    <input type="text" id="calendar" placeholder="Select Date" readonly style="cursor: pointer;" />
+    
+    <form action="{% url 'classroom:student_calendar' %}" method="get" style="margin-top: 10px; text-align: center;">
+        <button type="submit">View Full Calendar</button>
+    </form>
+</div>
+
 
     <div class="announcement">
     <h2>Announcements</h2>
@@ -198,7 +203,11 @@
             <li>No announcements available.</li>
         {% endfor %}
     </ul>
+    <form action="{% url 'classroom:student_announcement' %}" method="get" style="margin-top: 10px;">
+        <button type="submit">View All Announcements</button>
+    </form>
 </div>
+
 
 
 

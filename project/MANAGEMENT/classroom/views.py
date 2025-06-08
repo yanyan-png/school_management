@@ -6,6 +6,7 @@ from classroom.models import Badge
 from django.http import JsonResponse
 from .models import Attendance
 import json
+from classroom.models import Announcement
 
 
 @login_required
@@ -52,38 +53,21 @@ def student_merit_view(request):
 # ─── NEW: JSON endpoint for FullCalendar ────────────────────────────────
 @login_required
 def attendance_events(request):
-    try:
-        student = Student.objects.get(user=request.user)
-        attendance_records = Attendance.objects.filter(student=student)
-    except Student.DoesNotExist:
-        attendance_records = []
-
+    records = Attendance.objects.all()
     events = []
-    for rec in attendance_records:
-        # pick a color per status
-        if rec.status == 'present':
-            color = '#4caf50'   # green
-        elif rec.status == 'absent':
-            color = '#f44336'   # red
-        elif rec.status == 'excused':
-            color = '#ff9800'   # orange
-        else:
-            color = '#2196f3'   # fallback blue
-
+    for record in records:
         events.append({
-            'title': f"{rec.class_obj.class_name} – {rec.status.capitalize()}",
-            'start': rec.date.strftime('%Y-%m-%d'),
-            'allDay': True,
-            'color': color,
+            'title': record.status,
+            'start': record.date.isoformat(),
+            'color': 'green' if record.status.lower() == 'present' else 'red',
         })
-
     return JsonResponse(events, safe=False)
 
 def student_announcement(request):
     # You can pass any context you need to the template
     # For example, if you have a model Announcement, fetch all:
-    # announcements = Announcement.objects.all()
-    # return render(request, 'student/student_announcement.html', {'announcements': announcements})
+    announcements = Announcement.objects.all()
+    return render(request, 'student/student_announcement.html', {'announcements': announcements})
     
     return render(request, 'student/student_announcement.html')
 

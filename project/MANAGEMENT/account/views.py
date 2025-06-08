@@ -113,7 +113,7 @@ def student_dashboard(request):
 
     # ✅ Announcements: only for student's enrolled classes
     enrolled_classes = Class.objects.filter(enrollments__student=student_obj)
-    announcements = Announcement.objects.filter(class_obj__in=enrolled_classes).select_related('class_obj').order_by('-date_postedg')
+    announcements = Announcement.objects.filter(class_obj__in=enrolled_classes).select_related('class_obj').order_by('-date_posted')
 
     context = {
         'attendance_data': attendance_data,
@@ -181,3 +181,10 @@ def qr_login(request):
         except Student.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid QR code'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+    
+@login_required
+def student_merit(request):
+    student_obj = Student.objects.get(user=request.user)
+    # Add logic to calculate/display merit data
+    return render(request, 'student/student_merit.html', {'student': student_obj})
